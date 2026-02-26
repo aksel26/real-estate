@@ -1,0 +1,205 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "code": "11680", "name": "강남구", "nameEn": "Gangnam-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.0, 37.49], [127.09, 37.49], [127.09, 37.535], [127.0, 37.535], [127.0, 37.49]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11740", "name": "강동구", "nameEn": "Gangdong-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.09, 37.52], [127.185, 37.52], [127.185, 37.565], [127.09, 37.565], [127.09, 37.52]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11590", "name": "강북구", "nameEn": "Gangbuk-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.99, 37.63], [127.045, 37.63], [127.045, 37.655], [126.99, 37.655], [126.99, 37.63]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11500", "name": "강서구", "nameEn": "Gangseo-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.795, 37.53], [126.882, 37.53], [126.882, 37.58], [126.795, 37.58], [126.795, 37.53]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11620", "name": "관악구", "nameEn": "Gwanak-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.9, 37.455], [126.975, 37.455], [126.975, 37.495], [126.9, 37.495], [126.9, 37.455]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11215", "name": "광진구", "nameEn": "Gwangjin-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.06, 37.535], [127.11, 37.535], [127.11, 37.565], [127.06, 37.565], [127.06, 37.535]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11530", "name": "구로구", "nameEn": "Guro-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.845, 37.49], [126.9, 37.49], [126.9, 37.535], [126.845, 37.535], [126.845, 37.49]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11545", "name": "금천구", "nameEn": "Geumcheon-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.88, 37.45], [126.92, 37.45], [126.92, 37.49], [126.88, 37.49], [126.88, 37.45]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11230", "name": "노원구", "nameEn": "Nowon-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.055, 37.635], [127.115, 37.635], [127.115, 37.675], [127.055, 37.675], [127.055, 37.635]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11560", "name": "도봉구", "nameEn": "Dobong-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.025, 37.645], [127.07, 37.645], [127.07, 37.695], [127.025, 37.695], [127.025, 37.645]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11350", "name": "동대문구", "nameEn": "Dongdaemun-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.03, 37.575], [127.075, 37.575], [127.075, 37.61], [127.03, 37.61], [127.03, 37.575]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11250", "name": "동작구", "nameEn": "Dongjak-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.93, 37.49], [126.98, 37.49], [126.98, 37.525], [126.93, 37.525], [126.93, 37.49]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11440", "name": "마포구", "nameEn": "Mapo-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.885, 37.54], [126.955, 37.54], [126.955, 37.575], [126.885, 37.575], [126.885, 37.54]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11410", "name": "서대문구", "nameEn": "Seodaemun-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.925, 37.565], [126.975, 37.565], [126.975, 37.6], [126.925, 37.6], [126.925, 37.565]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11650", "name": "서초구", "nameEn": "Seocho-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.975, 37.47], [127.065, 37.47], [127.065, 37.51], [126.975, 37.51], [126.975, 37.47]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11200", "name": "성동구", "nameEn": "Seongdong-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.015, 37.555], [127.065, 37.555], [127.065, 37.585], [127.015, 37.585], [127.015, 37.555]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11290", "name": "성북구", "nameEn": "Seongbuk-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.99, 37.595], [127.04, 37.595], [127.04, 37.635], [126.99, 37.635], [126.99, 37.595]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11710", "name": "송파구", "nameEn": "Songpa-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.085, 37.49], [127.175, 37.49], [127.175, 37.535], [127.085, 37.535], [127.085, 37.49]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11470", "name": "양천구", "nameEn": "Yangcheon-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.845, 37.52], [126.9, 37.52], [126.9, 37.555], [126.845, 37.555], [126.845, 37.52]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11380", "name": "영등포구", "nameEn": "Yeongdeungpo-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.885, 37.515], [126.94, 37.515], [126.94, 37.545], [126.885, 37.545], [126.885, 37.515]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11170", "name": "용산구", "nameEn": "Yongsan-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.97, 37.52], [127.02, 37.52], [127.02, 37.555], [126.97, 37.555], [126.97, 37.52]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11305", "name": "은평구", "nameEn": "Eunpyeong-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.9, 37.595], [126.955, 37.595], [126.955, 37.64], [126.9, 37.64], [126.9, 37.595]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11110", "name": "종로구", "nameEn": "Jongno-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.965, 37.57], [127.015, 37.57], [127.015, 37.61], [126.965, 37.61], [126.965, 37.57]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11140", "name": "중구", "nameEn": "Jung-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[126.975, 37.55], [127.02, 37.55], [127.02, 37.575], [126.975, 37.575], [126.975, 37.55]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "code": "11320", "name": "중랑구", "nameEn": "Jungnang-gu" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[127.07, 37.585], [127.12, 37.585], [127.12, 37.625], [127.07, 37.625], [127.07, 37.585]]]
+      }
+    }
+  ]
+}
