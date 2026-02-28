@@ -1,8 +1,13 @@
-/** 우측 패널 너비 */
-export const PANEL_WIDTH = '30%'
+/** 바텀시트 스냅 포인트 */
+export const BOTTOM_SHEET = {
+  SNAP_PEEK: 0.25,
+  SNAP_HALF: 0.55,
+  SNAP_FULL: 0.90,
+  VELOCITY_THRESHOLD: 300,
+} as const
 
-/** 지도 영역 너비 */
-export const MAP_WIDTH = '70%'
+/** 데스크톱 패널 너비 (브레이크포인트별) */
+export const PANEL_WIDTHS = { md: 384, xl: 420, '2xl': 480 } as const
 
 /** 모션 애니메이션 기본 duration (초) */
 export const ANIMATION_DURATION = 0.3

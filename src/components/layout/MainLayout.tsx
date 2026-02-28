@@ -23,7 +23,7 @@ interface MainLayoutProps {
  */
 export default function MainLayout({ map, panel }: MainLayoutProps) {
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-slate-50">
+    <div className="h-dvh w-full overflow-hidden flex flex-col bg-slate-50">
       <TopBar />
 
       {/* Content area below the fixed TopBar */}

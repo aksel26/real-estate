@@ -1,6 +1,7 @@
 'use client';
 
 import FilterBar from './FilterBar';
+import { ExportButton } from '@/components/export';
 import { TOP_BAR_HEIGHT } from '@/constants';
 
 /**
@@ -13,7 +14,7 @@ export default function TopBar() {
       style={{ height: TOP_BAR_HEIGHT }}
       className={[
         'fixed top-0 left-0 right-0 z-40',
-        'flex items-center px-4 md:px-6 gap-4',
+        'flex items-center px-4 md:px-6 gap-2 md:gap-4',
         'bg-white/80 backdrop-blur-sm',
         'border-b border-slate-200/70',
         'flex-shrink-0',
@@ -32,8 +33,10 @@ export default function TopBar() {
         <FilterBar />
       </div>
 
-      {/* Right: reserved for future controls (settings, etc.) */}
-      <div className="flex-shrink-0 w-[80px] hidden md:block" aria-hidden="true" />
+      {/* Right: export controls */}
+      <div className="flex-shrink-0">
+        <ExportButton />
+      </div>
     </header>
   );
 }
