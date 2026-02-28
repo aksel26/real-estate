@@ -15,6 +15,7 @@ declare namespace kakao.maps {
     getLevel(): number
     getBounds(): LatLngBounds
     panTo(latlng: LatLng): void
+    relayout(): void
   }
 
   interface MapOptions {
@@ -46,6 +47,7 @@ declare namespace kakao.maps {
 
   interface PolygonOptions {
     path: LatLng[]
+    clickable?: boolean
     fillColor?: string
     fillOpacity?: number
     strokeColor?: string

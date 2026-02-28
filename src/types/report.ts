@@ -45,4 +45,10 @@ export interface NeighborhoodReport {
   rent: RentReport
   jeonseRate: PriceStats
   monthly: TrendPoint[]
+  sampleCount: {
+    trade: number
+    rent: number
+    total: number
+  }
+  summary: string
 }

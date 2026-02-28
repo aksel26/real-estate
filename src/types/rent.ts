@@ -1,5 +1,5 @@
 import type { PropertyType } from './filter'
-import type { QuantileRange } from './trade'
+import type { QuantileRange, TrendDirection } from './trade'
 
 /** 전세/월세 구분 */
 export type RentType = 'jeonse' | 'monthly'
@@ -52,4 +52,7 @@ export interface RentReport {
   jeonseCount: number
   monthlyCount: number
   depositRange: QuantileRange
+  sampleCount: number
+  trend: TrendDirection
+  trendPercent: number
 }

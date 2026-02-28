@@ -55,4 +55,5 @@ export interface TradeReport {
   priceRange: QuantileRange
   trend: TrendDirection
   trendPercent: number
+  sampleCount: number
 }
