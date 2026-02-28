@@ -2,24 +2,35 @@
 
 import { useEffect, useRef, useCallback } from 'react'
 import { useSelectionStore, useUIStore, useMapStore } from '@/stores'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { PolygonEntry } from './usePolygons'
 
 interface UseMapInteractionOptions {
+  map: kakao.maps.Map | null
   polygonsRef: React.RefObject<Map<string, PolygonEntry>>
+  findRegionAtPoint: (lat: number, lng: number) => { code: string; name: string } | null
   setPolygonStyle: (code: string, style: 'default' | 'hover' | 'selected') => void
+  /** When true, polygons are loaded and ready for interaction */
+  ready: boolean
 }
 
 export function useMapInteraction({
+  map,
   polygonsRef,
+  findRegionAtPoint,
   setPolygonStyle,
+  ready,
 }: UseMapInteractionOptions): void {
   const selectRegion = useSelectionStore((s) => s.selectRegion)
   const openPanel = useUIStore((s) => s.openPanel)
   const setHoverRegion = useMapStore((s) => s.setHoverRegion)
   const selectedPolygonId = useSelectionStore((s) => s.selectedPolygonId)
 
+  const hasFinePointer = useMediaQuery('(pointer: fine)')
+
   const selectedCodeRef = useRef<string | null>(null)
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hoveredCodeRef = useRef<string | null>(null)
+  const draggingRef = useRef(false)
 
   // Keep selectedCodeRef in sync with store
   useEffect(() => {
@@ -43,61 +54,73 @@ export function useMapInteraction({
     [selectRegion, openPanel, setPolygonStyle]
   )
 
-  const handleMouseOver = useCallback(
-    (code: string) => {
-      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
-      hoverTimerRef.current = setTimeout(() => {
-        setHoverRegion(code)
-        // Only apply hover style if not selected
-        if (selectedCodeRef.current !== code) {
-          setPolygonStyle(code, 'hover')
-        }
-      }, 16)
-    },
-    [setHoverRegion, setPolygonStyle]
-  )
-
-  const handleMouseOut = useCallback(
-    (code: string) => {
-      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
-      setHoverRegion(null)
-      // Restore to selected or default
-      if (selectedCodeRef.current === code) {
-        setPolygonStyle(code, 'selected')
-      } else {
-        setPolygonStyle(code, 'default')
-      }
-    },
-    [setHoverRegion, setPolygonStyle]
-  )
-
   useEffect(() => {
-    const polygons = polygonsRef.current
-    if (!polygons || polygons.size === 0) return
+    if (!map || !ready) return
 
-    const listeners: Array<() => void> = []
+    const dragStartHandler = () => {
+      draggingRef.current = true
+    }
+    const dragEndHandler = () => {
+      draggingRef.current = false
+    }
 
-    polygons.forEach(({ polygon, feature }, code) => {
-      const name = feature.properties.name
+    const clickHandler = (...args: unknown[]) => {
+      const e = args[0] as { latLng: kakao.maps.LatLng }
+      const latlng = e.latLng
+      const result = findRegionAtPoint(latlng.getLat(), latlng.getLng())
+      if (result) {
+        handleClick(result.code, result.name)
+      }
+    }
 
-      const clickHandler = () => handleClick(code, name)
-      const overHandler = () => handleMouseOver(code)
-      const outHandler = () => handleMouseOut(code)
+    const moveHandler = (...args: unknown[]) => {
+      if (draggingRef.current) return
 
-      kakao.maps.event.addListener(polygon, 'click', clickHandler)
-      kakao.maps.event.addListener(polygon, 'mouseover', overHandler)
-      kakao.maps.event.addListener(polygon, 'mouseout', outHandler)
+      const e = args[0] as { latLng: kakao.maps.LatLng }
+      const latlng = e.latLng
+      const result = findRegionAtPoint(latlng.getLat(), latlng.getLng())
+      const prevHover = hoveredCodeRef.current
 
-      listeners.push(() => {
-        kakao.maps.event.removeListener(polygon, 'click', clickHandler)
-        kakao.maps.event.removeListener(polygon, 'mouseover', overHandler)
-        kakao.maps.event.removeListener(polygon, 'mouseout', outHandler)
-      })
-    })
+      if (result) {
+        if (prevHover === result.code) return
+        // Clear previous hover
+        if (prevHover && prevHover !== selectedCodeRef.current) {
+          setPolygonStyle(prevHover, 'default')
+        }
+        hoveredCodeRef.current = result.code
+        setHoverRegion(result.code)
+        if (selectedCodeRef.current !== result.code) {
+          setPolygonStyle(result.code, 'hover')
+        }
+      } else {
+        if (prevHover) {
+          if (prevHover !== selectedCodeRef.current) {
+            setPolygonStyle(prevHover, 'default')
+          }
+          hoveredCodeRef.current = null
+          setHoverRegion(null)
+        }
+      }
+    }
+
+    kakao.maps.event.addListener(map, 'dragstart', dragStartHandler)
+    kakao.maps.event.addListener(map, 'dragend', dragEndHandler)
+    kakao.maps.event.addListener(map, 'click', clickHandler)
+
+    // hover 효과는 마우스가 있는 디바이스에서만 (모바일 터치 드래그 간섭 방지)
+    if (hasFinePointer) {
+      kakao.maps.event.addListener(map, 'mousemove', moveHandler)
+    }
 
     return () => {
-      listeners.forEach((remove) => remove())
-      if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current)
+      kakao.maps.event.removeListener(map, 'dragstart', dragStartHandler)
+      kakao.maps.event.removeListener(map, 'dragend', dragEndHandler)
+      kakao.maps.event.removeListener(map, 'click', clickHandler)
+      if (hasFinePointer) {
+        kakao.maps.event.removeListener(map, 'mousemove', moveHandler)
+      }
+      hoveredCodeRef.current = null
+      draggingRef.current = false
     }
-  }, [polygonsRef, handleClick, handleMouseOver, handleMouseOut])
+  }, [map, ready, hasFinePointer, findRegionAtPoint, handleClick, setPolygonStyle, setHoverRegion])
 }

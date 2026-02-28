@@ -6,9 +6,10 @@ import type { Coordinates } from '@/types/region'
 
 interface UseMapStoreSyncOptions {
   map: kakao.maps.Map | null
+  containerRef?: React.RefObject<HTMLElement | null>
 }
 
-export function useMapStoreSync({ map }: UseMapStoreSyncOptions): void {
+export function useMapStoreSync({ map, containerRef }: UseMapStoreSyncOptions): void {
   const setCenter = useMapStore((s) => s.setCenter)
   const setZoom = useMapStore((s) => s.setZoom)
   const setBounds = useMapStore((s) => s.setBounds)
@@ -56,12 +57,37 @@ export function useMapStoreSync({ map }: UseMapStoreSyncOptions): void {
     kakao.maps.event.addListener(map, 'dragend', dragEndHandler)
     kakao.maps.event.addListener(map, 'zoom_changed', zoomChangedHandler)
 
-    // Sync initial state
+    // Ensure map dimensions match container after layout settles
+    map.relayout()
     syncMapToStore(map)
+
+    // Re-sync when the map container resizes (e.g. panel open/close changes flex)
+    let observer: ResizeObserver | undefined
+    if (containerRef?.current) {
+      observer = new ResizeObserver(() => {
+        map.relayout()
+        syncMapToStore(map)
+      })
+      observer.observe(containerRef.current)
+    }
+
+    // Debounced window resize handler for viewport changes (e.g. desktop↔mobile)
+    let resizeTimer: ReturnType<typeof setTimeout> | undefined
+    const handleWindowResize = () => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(() => {
+        map.relayout()
+        syncMapToStore(map)
+      }, 200)
+    }
+    window.addEventListener('resize', handleWindowResize)
 
     return () => {
       kakao.maps.event.removeListener(map, 'dragend', dragEndHandler)
       kakao.maps.event.removeListener(map, 'zoom_changed', zoomChangedHandler)
+      observer?.disconnect()
+      window.removeEventListener('resize', handleWindowResize)
+      clearTimeout(resizeTimer)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map])

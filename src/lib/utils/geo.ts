@@ -47,6 +47,22 @@ export function getPolygonCenter(coordinates: number[][][]): { lat: number; lng:
 }
 
 /**
+ * Ray casting algorithm to test if a point (lat, lng) is inside a polygon ring.
+ * GeoJSON ring coordinates are [lng, lat][] format.
+ */
+export function pointInPolygon(lat: number, lng: number, ring: number[][]): boolean {
+  let inside = false
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi, yi] = [ring[i][1], ring[i][0]] // lat, lng
+    const [xj, yj] = [ring[j][1], ring[j][0]]
+    if ((yi > lng) !== (yj > lng) && lat < ((xj - xi) * (lng - yi)) / (yj - yi) + xi) {
+      inside = !inside
+    }
+  }
+  return inside
+}
+
+/**
  * Convert GeoJSON coordinate ring ([lng, lat]) to Kakao LatLng array.
  */
 export function convertToKakaoPath(coordinates: number[][]): kakao.maps.LatLng[] {

@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
 import { usePolygons } from './usePolygons'
 import { useMapInteraction } from './useMapInteraction'
 
@@ -9,13 +8,12 @@ interface PolygonLayerProps {
 }
 
 export function PolygonLayer({ map }: PolygonLayerProps) {
-  const { polygonsRef, setPolygonStyle } = usePolygons(map)
+  const { polygonsRef, setPolygonStyle, findRegionAtPoint, ready } = usePolygons(map)
 
-  // We need to attach interactions after polygons are loaded.
-  // usePolygons populates polygonsRef asynchronously, so we re-run the
-  // interaction effect when the map changes. The interaction hook reads
-  // polygonsRef directly, so it picks up entries added after mount.
-  useMapInteraction({ polygonsRef, setPolygonStyle })
+  // Attach map-level click/mousemove listeners that use point-in-polygon
+  // hit-testing instead of per-polygon event listeners.
+  // This keeps polygons non-clickable so mobile drag/zoom works normally.
+  useMapInteraction({ map, polygonsRef, findRegionAtPoint, setPolygonStyle, ready })
 
   return null
 }

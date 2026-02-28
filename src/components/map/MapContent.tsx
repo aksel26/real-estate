@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { KakaoMap } from './KakaoMap'
 import { PolygonLayer } from './PolygonLayer'
 import { useMapStoreSync } from './useMapStoreSync'
@@ -14,6 +14,7 @@ import { usePrefetchAdjacentMonths } from '@/hooks/queries'
  */
 export function MapContent() {
   const [mapInstance, setMapInstance] = useState<kakao.maps.Map | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   // Prefetch wiring
   const selectedLawd = useSelectionStore((s) => s.selectedLawd)
@@ -27,10 +28,10 @@ export function MapContent() {
   usePrefetchAdjacentMonths(propertyType, selectedLawd ?? '', currentYm)
 
   // Bidirectional map ↔ store sync
-  useMapStoreSync({ map: mapInstance })
+  useMapStoreSync({ map: mapInstance, containerRef })
 
   return (
-    <div className="relative w-full h-full">
+    <div ref={containerRef} className="relative w-full h-full touch-none [&_*]:touch-none">
       <KakaoMap
         className="w-full h-full"
         onMapReady={setMapInstance}
