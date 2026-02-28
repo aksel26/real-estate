@@ -43,6 +43,7 @@ export async function getTradesWithSummary(
     // trend and trendPercent are calculated at the report level (multi-month)
     trend: 'flat',
     trendPercent: 0,
+    sampleCount: items.length,
   }
 
   const meta: TradeMeta = {

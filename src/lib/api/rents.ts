@@ -46,6 +46,10 @@ export async function getRentsWithSummary(
     jeonseCount: jeonseItems.length,
     monthlyCount: monthlyItems.length,
     depositRange,
+    sampleCount: items.length,
+    // trend and trendPercent are calculated at the report level (multi-month)
+    trend: 'flat',
+    trendPercent: 0,
   }
 
   const meta: RentMeta = {

@@ -1,4 +1,4 @@
-import type { ApiError } from '@/types'
+import type { ApiError, ApiResponse } from '@/types'
 
 export async function fetchApi<T>(url: string): Promise<T> {
   const response = await fetch(url)
@@ -13,5 +13,6 @@ export async function fetchApi<T>(url: string): Promise<T> {
     throw errorBody
   }
 
-  return response.json() as Promise<T>
+  const json: ApiResponse<T> = await response.json()
+  return json.data
 }

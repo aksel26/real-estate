@@ -6,6 +6,7 @@ import { getTradesWithSummary } from './trades'
 import { getRentsWithSummary } from './rents'
 import { calculateMedian, calculateQuantile, calculateChangeRate } from '@/lib/utils/calc'
 import { getCurrentYearMonth, subtractMonths } from '@/lib/utils/date'
+import { generateSummary } from '@/lib/utils/summary'
 import { JEONSE_RATE_THRESHOLDS } from '@/constants/filter'
 import type { PropertyType } from '@/types/filter'
 import type { NeighborhoodReport, TrendPoint, PriceStats, JeonseRateLevel } from '@/types/report'
@@ -26,9 +27,9 @@ function computeJeonseRate(depositMedian: number, priceMedian: number): PriceSta
   const value = Math.round((depositMedian / priceMedian) * 1000) / 10 // 1 decimal
 
   let level: JeonseRateLevel
-  if (value >= 70) {
+  if (value >= JEONSE_RATE_THRESHOLDS.danger) {
     level = 'caution'
-  } else if (value >= 50) {
+  } else if (value >= JEONSE_RATE_THRESHOLDS.warning) {
     level = 'normal'
   } else {
     level = 'good'
@@ -63,10 +64,11 @@ function buildTradeReport(allItems: TradeItem[], changePercent: number): TradeRe
     priceRange,
     trend: trendDirection(changePercent),
     trendPercent: Math.round(changePercent * 10) / 10,
+    sampleCount: allItems.length,
   }
 }
 
-function buildRentReport(allItems: RentItem[]): RentReport {
+function buildRentReport(allItems: RentItem[], changePercent: number): RentReport {
   const jeonseItems = allItems.filter((i) => i.rentType === 'jeonse')
   const monthlyItems = allItems.filter((i) => i.rentType === 'monthly')
 
@@ -85,6 +87,9 @@ function buildRentReport(allItems: RentItem[]): RentReport {
       q1: calculateQuantile(deposits, 0.25),
       q3: calculateQuantile(deposits, 0.75),
     },
+    sampleCount: allItems.length,
+    trend: trendDirection(changePercent),
+    trendPercent: Math.round(changePercent * 10) / 10,
   }
 }
 
@@ -160,7 +165,7 @@ export async function buildNeighborhoodReport(
     )
     .flatMap((r) => r.value.items)
 
-  // Compute trend: compare newest month median vs oldest month median
+  // Compute trade trend: compare newest month median vs oldest month median
   const validMonthlyTrades = monthly.filter((m) => m.tradeMedianPrice > 0)
   const oldestPrice =
     validMonthlyTrades.length > 0 ? validMonthlyTrades[0].tradeMedianPrice : 0
@@ -170,12 +175,22 @@ export async function buildNeighborhoodReport(
       : 0
   const changePercent = calculateChangeRate(oldestPrice, newestPrice)
 
+  // Compute rent trend: compare newest month median deposit vs oldest month median deposit
+  const validMonthlyRents = monthly.filter((m) => m.rentMedianDeposit > 0)
+  const oldestDeposit =
+    validMonthlyRents.length > 0 ? validMonthlyRents[0].rentMedianDeposit : 0
+  const newestDeposit =
+    validMonthlyRents.length > 0
+      ? validMonthlyRents[validMonthlyRents.length - 1].rentMedianDeposit
+      : 0
+  const rentChangePercent = calculateChangeRate(oldestDeposit, newestDeposit)
+
   const tradeReport = buildTradeReport(allTradeItems, changePercent)
-  const rentReport = buildRentReport(allRentItems)
+  const rentReport = buildRentReport(allRentItems, rentChangePercent)
 
   const jeonseRate = computeJeonseRate(rentReport.medianDeposit, tradeReport.medianPrice)
 
-  return {
+  const report: NeighborhoodReport = {
     region: {
       lawd,
       name: regionName ?? lawd,
@@ -190,5 +205,15 @@ export async function buildNeighborhoodReport(
     rent: rentReport,
     jeonseRate,
     monthly,
+    sampleCount: {
+      trade: allTradeItems.length,
+      rent: allRentItems.length,
+      total: allTradeItems.length + allRentItems.length,
+    },
+    summary: '',
   }
+
+  report.summary = generateSummary(report)
+
+  return report
 }

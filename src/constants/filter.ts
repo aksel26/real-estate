@@ -25,3 +25,9 @@ export const JEONSE_RATE_THRESHOLDS = {
   danger: 80,
   warning: 60,
 } as const
+
+/**
+ * 표본 수 충분 여부 임계값
+ * sampleCount >= 30 → 충분, < 30 → 부족
+ */
+export const SAMPLE_COUNT_THRESHOLD = 30
