@@ -2,12 +2,13 @@
 
 import { useSelectionStore } from '@/stores'
 import { useReport } from '@/hooks/queries'
+import { Skeleton } from '@/components/ui'
 import TabNavigation from './TabNavigation'
 import TabContent from './TabContent'
 
 export default function ReportPanel() {
   const selectedRegionName = useSelectionStore((s) => s.selectedRegionName)
-  const { isLoading } = useReport()
+  const { data, isLoading } = useReport()
 
   if (!selectedRegionName && !isLoading) {
     return (
@@ -24,6 +25,15 @@ export default function ReportPanel() {
         <h2 className="text-base font-bold text-slate-900 truncate">
           {selectedRegionName ?? ''}
         </h2>
+        {isLoading ? (
+          <div className="mt-1 mb-1">
+            <Skeleton height={12} width="60%" />
+          </div>
+        ) : (
+          data?.summary && (
+            <p className="text-xs text-slate-500 mt-1 truncate">{data.summary}</p>
+          )
+        )}
         <TabNavigation />
       </div>
 

@@ -14,7 +14,7 @@ export default function Chip({ label, selected, onClick }: ChipProps) {
       onClick={onClick}
       whileTap={{ scale: 0.94 }}
       transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-      className={`relative px-3 py-1.5 rounded-full text-sm font-medium transition-colors cursor-pointer select-none ${
+      className={`relative px-2.5 py-1 md:px-3 md:py-1.5 rounded-full text-xs md:text-sm font-medium transition-colors cursor-pointer select-none ${
         selected
           ? 'bg-blue-600 text-white shadow-sm'
           : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:ring-slate-300 hover:text-slate-800'

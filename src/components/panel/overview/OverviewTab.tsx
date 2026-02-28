@@ -1,7 +1,7 @@
 'use client'
 
 import { useReport } from '@/hooks/queries'
-import { Skeleton } from '@/components/ui'
+import { Skeleton, SampleCountBadge } from '@/components/ui'
 import KeyMetricsGrid from './KeyMetricsGrid'
 import MiniTrendChart from './MiniTrendChart'
 
@@ -32,7 +32,7 @@ export default function OverviewTab() {
     return <OverviewLoadingSkeleton />
   }
 
-  if (isError || !data) {
+  if (isError && !data) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 p-8 text-center">
         <p className="text-sm font-semibold text-slate-800">데이터를 불러오지 못했습니다</p>
@@ -46,8 +46,32 @@ export default function OverviewTab() {
     )
   }
 
+  if (!data) return null
+
   return (
     <div className="p-4 space-y-4">
+      {isError && (
+        <div className="flex items-center justify-between gap-2 rounded-lg bg-amber-50 border border-amber-200 px-4 py-2.5">
+          <p className="text-xs font-medium text-amber-700">
+            데이터가 오래되었습니다. 최신 정보를 불러오는 중 오류가 발생했습니다.
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="shrink-0 px-3 py-1 text-xs font-medium text-amber-700 border border-amber-300 rounded-md hover:bg-amber-100 transition-colors"
+          >
+            다시 시도
+          </button>
+        </div>
+      )}
+      {data.summary && (
+        <div className="rounded-xl border border-slate-100 bg-white px-4 py-3">
+          <p className="text-xs font-medium text-slate-500 mb-1">한 줄 요약</p>
+          <p className="text-sm text-slate-800">{data.summary}</p>
+        </div>
+      )}
+      <div className="flex gap-2">
+        <SampleCountBadge sampleCount={data.sampleCount.trade} />
+      </div>
       <KeyMetricsGrid report={data} />
 
       {data.monthly.length > 0 && (

@@ -32,7 +32,7 @@ export default function KeyMetricsGrid({ report }: Props) {
   const { arrow, color } = getTrendArrow(trade.trend)
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 xl:gap-4">
       {/* 매매 중위가 */}
       <div className="rounded-xl border border-slate-100 bg-white p-3">
         <p className="text-xs text-slate-500">매매 중위가</p>
@@ -50,9 +50,14 @@ export default function KeyMetricsGrid({ report }: Props) {
         <p className="mt-1 text-base font-bold text-slate-900 leading-tight">
           {formatPrice(rent.medianDeposit)}
         </p>
-        <p className="mt-0.5 text-xs text-slate-400">
-          전세 {rent.jeonseCount.toLocaleString('ko-KR')}건
-        </p>
+        {(() => {
+          const { arrow, color } = getTrendArrow(rent.trend)
+          return (
+            <p className={`mt-0.5 text-xs font-medium ${color}`}>
+              {arrow} {rent.trendPercent !== 0 ? `${Math.abs(rent.trendPercent).toFixed(1)}%` : '변동없음'}
+            </p>
+          )
+        })()}
       </div>
 
       {/* 거래량 */}
