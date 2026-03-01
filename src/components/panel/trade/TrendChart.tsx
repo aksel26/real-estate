@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   ComposedChart,
@@ -9,12 +9,12 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from 'recharts'
-import { yearMonthToShortLabel, formatPriceShort } from '@/lib/utils'
-import type { TrendPoint } from '@/types'
+} from 'recharts';
+import { yearMonthToShortLabel, formatPriceShort } from '@/lib/utils';
+import type { TrendPoint } from '@/types';
 
 interface Props {
-  monthly: TrendPoint[]
+  monthly: TrendPoint[];
 }
 
 export default function TrendChart({ monthly }: Props) {
@@ -24,12 +24,14 @@ export default function TrendChart({ monthly }: Props) {
       label: yearMonthToShortLabel(p.ym),
       price: p.tradeMedianPrice,
       volume: p.tradeCount,
-    }))
+    }));
 
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-4">
-      <p className="text-xs font-medium text-slate-500 mb-3">매매 트렌드</p>
-      <ResponsiveContainer width="100%" height={240}>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6">
+      <p className="text-sm border-b border-transparent font-medium text-slate-500 mb-4 md:text-base md:mb-5">
+        매매 트렌드
+      </p>
+      <ResponsiveContainer width="100%" height={260}>
         <ComposedChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
@@ -62,8 +64,8 @@ export default function TrendChart({ monthly }: Props) {
               fontSize: 12,
             }}
             formatter={(value: number, name: string) => {
-              if (name === 'price') return [formatPriceShort(value), '중위가']
-              return [`${value}건`, '거래량']
+              if (name === 'price') return [formatPriceShort(value), '중위가'];
+              return [`${value}건`, '거래량'];
             }}
           />
           <Bar
@@ -85,5 +87,5 @@ export default function TrendChart({ monthly }: Props) {
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   LineChart,
@@ -8,12 +8,12 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from 'recharts'
-import { yearMonthToShortLabel, formatPriceShort } from '@/lib/utils'
-import type { TrendPoint } from '@/types'
+} from 'recharts';
+import { yearMonthToShortLabel, formatPriceShort } from '@/lib/utils';
+import type { TrendPoint } from '@/types';
 
 interface Props {
-  monthly: TrendPoint[]
+  monthly: TrendPoint[];
 }
 
 export default function RentTrendChart({ monthly }: Props) {
@@ -22,12 +22,14 @@ export default function RentTrendChart({ monthly }: Props) {
     .map((p) => ({
       label: yearMonthToShortLabel(p.ym),
       deposit: p.rentMedianDeposit,
-    }))
+    }));
 
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-4">
-      <p className="text-xs font-medium text-slate-500 mb-3">전세 보증금 트렌드</p>
-      <ResponsiveContainer width="100%" height={200}>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6">
+      <p className="text-sm border-b border-transparent font-medium text-slate-500 mb-4 md:text-base md:mb-5">
+        전세 보증금 트렌드
+      </p>
+      <ResponsiveContainer width="100%" height={260}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
           <XAxis
@@ -62,5 +64,5 @@ export default function RentTrendChart({ monthly }: Props) {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

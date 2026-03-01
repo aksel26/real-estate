@@ -3,27 +3,27 @@
 import RegionPill from './RegionPill';
 import PropertyTypeFilter from './PropertyTypeFilter';
 import PeriodFilter from './PeriodFilter';
+import MobileFilterPopover from './MobileFilterPopover';
 
 /**
  * FilterBar — horizontal row containing the region pill and filter chips.
- * Scrollable on mobile to handle overflow gracefully.
+ * Uses a Popover for fitlers on mobile to improve responsiveness.
  */
 export default function FilterBar() {
   return (
-    <div
-      className={[
-        'flex items-center gap-1.5 md:gap-2',
-        // Mobile: horizontal scroll, hide scrollbar
-        'overflow-x-auto',
-        '[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]',
-      ].join(' ')}
-      aria-label="필터 바"
-    >
+    <div className="flex items-center justify-between md:justify-start w-full" aria-label="필터 바">
       <RegionPill />
-      <PropertyTypeFilter />
-      {/* Thin divider */}
-      <div className="w-px h-4 md:h-5 bg-slate-200 flex-shrink-0" aria-hidden="true" />
-      <PeriodFilter />
+
+      {/* Desktop Filters (Hidden on Mobile) */}
+      <div className="hidden md:flex items-center gap-2 lg:gap-3 ml-3">
+        <PropertyTypeFilter />
+        {/* Thin divider */}
+        <div className="w-px h-5 bg-slate-200 flex-shrink-0 mx-1" aria-hidden="true" />
+        <PeriodFilter />
+      </div>
+
+      {/* Mobile Filter Popover (Hidden on Desktop) */}
+      <MobileFilterPopover />
     </div>
   );
 }

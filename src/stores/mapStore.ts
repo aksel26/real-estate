@@ -20,7 +20,7 @@ interface MapState {
 }
 
 const DEFAULT_CENTER: Coordinates = { lat: 37.5665, lng: 126.978 } // 서울시청
-const DEFAULT_ZOOM = 11
+const DEFAULT_ZOOM = 8
 
 const initialState = {
   center: DEFAULT_CENTER,

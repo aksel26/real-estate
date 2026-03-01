@@ -1,63 +1,63 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import { useReport } from '@/hooks/queries'
-import { useToast } from '@/hooks/useToast'
-import { generateMarkdownReport } from '@/lib/utils'
+import { useState, useRef, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useReport } from '@/hooks/queries';
+import { useToast } from '@/hooks/useToast';
+import { generateMarkdownReport } from '@/lib/utils';
 
 export default function ExportButton() {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  const { data } = useReport()
-  const { addToast } = useToast()
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { data } = useReport();
+  const { addToast } = useToast();
 
   // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
+        setOpen(false);
       }
     }
     if (open) {
-      document.addEventListener('mousedown', handleClick)
-      return () => document.removeEventListener('mousedown', handleClick)
+      document.addEventListener('mousedown', handleClick);
+      return () => document.removeEventListener('mousedown', handleClick);
     }
-  }, [open])
+  }, [open]);
 
   const handleCopy = async () => {
-    if (!data) return
-    const md = generateMarkdownReport(data)
+    if (!data) return;
+    const md = generateMarkdownReport(data);
     try {
-      await navigator.clipboard.writeText(md)
-      addToast('Markdown이 클립보드에 복사되었습니다', 'success')
+      await navigator.clipboard.writeText(md);
+      addToast('Markdown이 클립보드에 복사되었습니다', 'success');
     } catch {
-      addToast('복사에 실패했습니다', 'error')
+      addToast('복사에 실패했습니다', 'error');
     }
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   const handleDownload = () => {
-    if (!data) return
-    const md = generateMarkdownReport(data)
-    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '')
-    const fileName = `${data.region.name}_리포트_${today}.md`
-    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = fileName
-    a.click()
-    URL.revokeObjectURL(url)
-    setOpen(false)
-  }
+    if (!data) return;
+    const md = generateMarkdownReport(data);
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const fileName = `${data.region.name}_리포트_${today}.md`;
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+    setOpen(false);
+  };
 
   return (
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
         disabled={!data}
-        className="inline-flex items-center gap-1.5 px-2 py-1.5 md:px-3 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center justify-center gap-1.5 w-8 h-8 md:w-auto md:h-auto md:px-3 md:py-1.5 text-xs font-medium text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {/* Export icon (download SVG) */}
         <svg
@@ -132,5 +132,5 @@ export default function ExportButton() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

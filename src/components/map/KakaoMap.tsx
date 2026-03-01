@@ -9,7 +9,7 @@ interface KakaoMapProps {
 }
 
 const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 } // 서울시청
-const DEFAULT_LEVEL = 11
+const DEFAULT_LEVEL = 8
 
 export function KakaoMap({ className, onMapReady }: KakaoMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)

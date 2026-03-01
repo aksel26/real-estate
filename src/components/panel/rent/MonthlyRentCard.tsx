@@ -1,25 +1,33 @@
-'use client'
+'use client';
 
-import { formatPrice } from '@/lib/utils'
-import type { RentReport } from '@/types'
+import { formatPrice } from '@/lib/utils';
+import type { RentReport } from '@/types';
 
 interface Props {
-  rent: RentReport
+  rent: RentReport;
 }
 
 export default function MonthlyRentCard({ rent }: Props) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-white p-4">
-      <p className="text-xs font-medium text-slate-500">월세 현황</p>
-      <p className="mt-1 text-lg font-bold text-slate-900">
-        보증금 {formatPrice(rent.medianDeposit)}{' '}
-        <span className="text-slate-400 font-normal">/</span>{' '}
-        월세 {formatPrice(rent.medianMonthly)}
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 flex flex-col justify-between">
+      <p className="text-sm border-b border-transparent font-medium text-slate-500 md:text-base">
+        월세 현황
       </p>
-      <div className="mt-2 flex gap-3 text-xs text-slate-500">
-        <span>전세 {rent.jeonseCount.toLocaleString('ko-KR')}건</span>
-        <span>월세 {rent.monthlyCount.toLocaleString('ko-KR')}건</span>
+      <div className="mt-3 md:mt-4">
+        <p className="text-xl font-extrabold text-slate-900 md:text-2xl lg:text-3xl tracking-tight">
+          보증금 {formatPrice(rent.medianDeposit)}{' '}
+          <span className="text-slate-300 font-normal px-0.5">/</span> 월세{' '}
+          {formatPrice(rent.medianMonthly)}
+        </p>
+        <div className="mt-3 flex items-center gap-2 text-[13px] font-semibold text-slate-500">
+          <span className="bg-slate-50 px-2.5 py-1 rounded-md text-slate-600">
+            전세 {rent.jeonseCount.toLocaleString('ko-KR')}건
+          </span>
+          <span className="bg-slate-50 px-2.5 py-1 rounded-md text-slate-600">
+            월세 {rent.monthlyCount.toLocaleString('ko-KR')}건
+          </span>
+        </div>
       </div>
     </div>
-  )
+  );
 }

@@ -302,7 +302,7 @@ export default function PanelArea({ children }: PanelAreaProps) {
   }, [isDesktop, rightPanelOpen, setSheetSnap]);
 
   return (
-    <AnimatePresence mode="popLayout">
+    <AnimatePresence mode="wait">
       {rightPanelOpen &&
         (isDesktop ? (
           <DesktopPanel closePanel={closePanel}>{children}</DesktopPanel>

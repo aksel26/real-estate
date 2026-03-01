@@ -1,35 +1,38 @@
-'use client'
+'use client';
 
-import { useReport } from '@/hooks/queries'
-import { Skeleton, SampleCountBadge } from '@/components/ui'
-import KeyMetricsGrid from './KeyMetricsGrid'
-import MiniTrendChart from './MiniTrendChart'
+import { useReport } from '@/hooks/queries';
+import { Skeleton, SampleCountBadge } from '@/components/ui';
+import KeyMetricsGrid from './KeyMetricsGrid';
+import MiniTrendChart from './MiniTrendChart';
 
 function OverviewLoadingSkeleton() {
   return (
     <div className="p-4 space-y-4">
       <div className="grid grid-cols-2 gap-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-slate-100 bg-white p-3 space-y-2">
-            <Skeleton height={12} width="50%" />
-            <Skeleton height={20} width="70%" />
+          <div
+            key={i}
+            className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2 lg:p-5"
+          >
+            <Skeleton height={14} width="50%" />
+            <Skeleton height={24} width="70%" />
             <Skeleton height={12} width="40%" />
           </div>
         ))}
       </div>
-      <div className="rounded-xl border border-slate-100 bg-white p-4 space-y-2">
-        <Skeleton height={12} width="40%" />
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6 space-y-2">
+        <Skeleton height={14} width="40%" />
         <Skeleton height={48} />
       </div>
     </div>
-  )
+  );
 }
 
 export default function OverviewTab() {
-  const { data, isLoading, isError, refetch } = useReport()
+  const { data, isLoading, isError, refetch } = useReport();
 
   if (isLoading) {
-    return <OverviewLoadingSkeleton />
+    return <OverviewLoadingSkeleton />;
   }
 
   if (isError && !data) {
@@ -43,10 +46,10 @@ export default function OverviewTab() {
           다시 시도
         </button>
       </div>
-    )
+    );
   }
 
-  if (!data) return null
+  if (!data) return null;
 
   return (
     <div className="p-4 space-y-4">
@@ -64,9 +67,9 @@ export default function OverviewTab() {
         </div>
       )}
       {data.summary && (
-        <div className="rounded-xl border border-slate-100 bg-white px-4 py-3">
-          <p className="text-xs font-medium text-slate-500 mb-1">한 줄 요약</p>
-          <p className="text-sm text-slate-800">{data.summary}</p>
+        <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4 lg:px-6 lg:py-5">
+          <p className="text-sm font-medium text-slate-500 mb-1.5 md:mb-2">한 줄 요약</p>
+          <p className="text-slate-800 leading-relaxed font-medium md:text-base">{data.summary}</p>
         </div>
       )}
       <div className="flex gap-2">
@@ -75,18 +78,18 @@ export default function OverviewTab() {
       <KeyMetricsGrid report={data} />
 
       {data.monthly.length > 0 && (
-        <div className="rounded-xl border border-slate-100 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500 mb-2">매매가 추이</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6">
+          <p className="text-sm font-medium text-slate-500 mb-3 md:text-base">매매가 추이</p>
           <MiniTrendChart monthly={data.monthly} dataKey="tradeMedianPrice" color="#3b82f6" />
         </div>
       )}
 
       {data.monthly.length > 0 && (
-        <div className="rounded-xl border border-slate-100 bg-white p-4">
-          <p className="text-xs font-medium text-slate-500 mb-2">전세 보증금 추이</p>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6">
+          <p className="text-sm font-medium text-slate-500 mb-3 md:text-base">전세 보증금 추이</p>
           <MiniTrendChart monthly={data.monthly} dataKey="rentMedianDeposit" color="#8b5cf6" />
         </div>
       )}
     </div>
-  )
+  );
 }
