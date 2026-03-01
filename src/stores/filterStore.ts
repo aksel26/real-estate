@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import type { PropertyType, NumericRange } from '@/types/filter'
+import type { AreaBandId } from '@/types/ranking'
 
 interface FilterState {
   // ── 상태 ──
@@ -12,12 +13,15 @@ interface FilterState {
   priceRange: NumericRange | null
   /** 면적 범위 필터 (㎡) */
   areaRange: NumericRange | null
+  /** 면적대 필터 (전월세 단지 랭킹) */
+  areaBand: AreaBandId
 
   // ── 액션 ──
   setPropertyType: (type: PropertyType) => void
   setMonths: (months: number) => void
   setPriceRange: (range: NumericRange | null) => void
   setAreaRange: (range: NumericRange | null) => void
+  setAreaBand: (band: AreaBandId) => void
   resetFilters: () => void
 }
 
@@ -26,6 +30,7 @@ const initialState = {
   months: 6,
   priceRange: null,
   areaRange: null,
+  areaBand: 'all' as AreaBandId,
 }
 
 export const useFilterStore = create<FilterState>()(
@@ -37,6 +42,7 @@ export const useFilterStore = create<FilterState>()(
       setMonths: (months) => set({ months }, false, 'filter/setMonths'),
       setPriceRange: (range) => set({ priceRange: range }, false, 'filter/setPriceRange'),
       setAreaRange: (range) => set({ areaRange: range }, false, 'filter/setAreaRange'),
+      setAreaBand: (band) => set({ areaBand: band }, false, 'filter/setAreaBand'),
       resetFilters: () => set(initialState, false, 'filter/resetFilters'),
     }),
     { name: 'filterStore', enabled: process.env.NODE_ENV === 'development' }

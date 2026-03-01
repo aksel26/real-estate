@@ -6,9 +6,10 @@ interface ChipProps {
   label: string;
   selected: boolean;
   onClick: () => void;
+  layoutGroup?: string;
 }
 
-export default function Chip({ label, selected, onClick }: ChipProps) {
+export default function Chip({ label, selected, onClick, layoutGroup }: ChipProps) {
   return (
     <motion.button
       onClick={onClick}
@@ -22,7 +23,7 @@ export default function Chip({ label, selected, onClick }: ChipProps) {
     >
       {selected && (
         <motion.span
-          layoutId="chip-selected-bg"
+          layoutId={layoutGroup ?? 'chip-selected-bg'}
           className="absolute inset-0 rounded-full bg-blue-600"
           style={{ zIndex: -1 }}
           transition={{ type: 'spring', stiffness: 400, damping: 30 }}

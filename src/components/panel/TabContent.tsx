@@ -3,8 +3,8 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useUIStore } from '@/stores'
 import TradeTab from './trade/TradeTab'
-import RentTab from './rent/RentTab'
 import OverviewTab from './overview/OverviewTab'
+import { LeasePanel } from './lease'
 
 export default function TabContent() {
   const activeTab = useUIStore((s) => s.activeTab)
@@ -20,9 +20,9 @@ export default function TabContent() {
           transition={{ duration: 0.18, ease: 'easeOut' }}
           className="h-full"
         >
-          {activeTab === 'trade' && <TradeTab />}
-          {activeTab === 'rent' && <RentTab />}
           {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'lease' && <LeasePanel />}
+          {activeTab === 'trade' && <TradeTab />}
         </motion.div>
       </AnimatePresence>
     </div>
