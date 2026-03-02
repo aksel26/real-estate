@@ -4,6 +4,8 @@ import { useReport } from '@/hooks/queries';
 import { Skeleton, SampleCountBadge } from '@/components/ui';
 import KeyMetricsGrid from './KeyMetricsGrid';
 import MiniTrendChart from './MiniTrendChart';
+import PriceDistributionChart from './PriceDistributionChart';
+import JeonseRatioCard from './JeonseRatioCard';
 
 function OverviewLoadingSkeleton() {
   return (
@@ -77,6 +79,8 @@ export default function OverviewTab() {
       </div>
       <KeyMetricsGrid report={data} />
 
+      <JeonseRatioCard />
+
       {data.monthly.length > 0 && (
         <div className="rounded-2xl border border-slate-200 bg-white p-5 lg:p-6">
           <p className="text-sm font-medium text-slate-500 mb-3 md:text-base">매매가 추이</p>
@@ -90,6 +94,8 @@ export default function OverviewTab() {
           <MiniTrendChart monthly={data.monthly} dataKey="rentMedianDeposit" color="#8b5cf6" />
         </div>
       )}
+
+      <PriceDistributionChart />
     </div>
   );
 }
