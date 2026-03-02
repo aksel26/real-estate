@@ -46,7 +46,7 @@ export default function ReportPanel() {
   return (
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
-      <div className="pt-6 md:pt-8 pb-0 bg-white border-b border-slate-200 z-10">
+      <div className="flex-shrink-0 pt-6 md:pt-8 pb-0 bg-white border-b border-slate-200 z-10">
         <div className="px-5 md:px-6 mb-5 md:mb-6">
           <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight truncate">
             {selectedRegionName ?? ''}

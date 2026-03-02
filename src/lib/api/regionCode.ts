@@ -13,9 +13,5 @@ import type { RegionCandidate } from '@/types/region'
  */
 export async function searchRegionCodes(query: string): Promise<RegionCandidate[]> {
   const raw = await fetchRegionCode(query)
-
-  // Filter out 폐지 (废止) records if the field is present
-  const active = raw.filter((r) => !r.폐지여부 || r.폐지여부 === '존재')
-
-  return active.map(normalizeRegionCode)
+  return raw.map(normalizeRegionCode)
 }

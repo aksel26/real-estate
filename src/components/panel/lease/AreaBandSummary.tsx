@@ -15,7 +15,7 @@ export default function AreaBandSummary({ stats }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <motion.div layout className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
       <button
         onClick={() => setExpanded((v) => !v)}
         className="w-full p-5 lg:p-6 text-left focus:outline-none flex flex-col justify-between"
@@ -111,6 +111,6 @@ export default function AreaBandSummary({ stats }: Props) {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

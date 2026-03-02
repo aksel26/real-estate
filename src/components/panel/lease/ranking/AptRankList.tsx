@@ -17,6 +17,8 @@ export default function AptRankList({ items }: Props) {
   const rankSortDir = useUIStore((s) => s.rankSortDir);
   const setRankSort = useUIStore((s) => s.setRankSort);
   const selectApt = useUIStore((s) => s.selectApt);
+  const sheetSnap = useUIStore((s) => s.sheetSnap);
+  const setSheetSnap = useUIStore((s) => s.setSheetSnap);
 
   const visibleItems = showAll ? items : items.slice(0, DEFAULT_RANK_LIMIT);
   const hasMore = items.length > DEFAULT_RANK_LIMIT;
@@ -82,13 +84,18 @@ export default function AptRankList({ items }: Props) {
       ) : (
         <LayoutGroup>
           <div className="space-y-2.5">
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {visibleItems.map((item, idx) => (
                 <AptRankCard
                   key={item.aptName}
                   item={item}
                   rank={idx + 1}
-                  onClick={() => selectApt(item.aptName)}
+                  onClick={() => {
+                    selectApt(item.aptName);
+                    if (sheetSnap === 'full') {
+                      setSheetSnap('half');
+                    }
+                  }}
                 />
               ))}
             </AnimatePresence>

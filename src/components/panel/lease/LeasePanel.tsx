@@ -29,7 +29,7 @@ export default function LeasePanel() {
     : null;
 
   return (
-    <div className="relative h-full">
+    <div className="relative min-h-full">
       <div className="p-4 space-y-4">
         <AreaBandChips />
         <AreaBandSummary stats={bandStats} />

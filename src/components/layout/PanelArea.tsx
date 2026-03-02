@@ -148,10 +148,10 @@ function DesktopPanel({
       aria-label="리포트 패널"
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
-      exit={{ x: '100%' }}
+      exit={{ x: '100%', width: 0 }}
       transition={SPRING_CONFIG}
       className={[
-        'bg-white shadow-2xl overflow-y-auto overflow-x-hidden z-30',
+        'bg-white shadow-2xl overflow-hidden z-30',
         'flex flex-col relative h-full',
         'w-[384px] xl:w-[420px] 2xl:w-[480px]',
         'shadow-[-4px_0_24px_-4px_rgba(0,0,0,0.08)]',
@@ -169,7 +169,7 @@ function DesktopPanel({
           <CloseIcon />
         </motion.button>
       </div>
-      <div className="flex-1 min-h-0">{children}</div>
+      <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
     </motion.aside>
   );
 }
