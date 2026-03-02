@@ -43,8 +43,17 @@ export class MCPResponseError extends MCPError {
   }
 }
 
+/** MCP tool returned isError: true */
+export class MCPToolError extends MCPError {
+  constructor(toolName: string, message: string) {
+    super(`MCP tool "${toolName}" failed: ${message}`, 'MCP_TOOL_ERROR', 500)
+    this.name = 'MCPToolError'
+  }
+}
+
 /** Determines whether an error is retryable */
 export function isRetryable(err: unknown): boolean {
+  if (err instanceof MCPToolError) return false
   if (err instanceof MCPTimeoutError) return true
   if (err instanceof MCPConnectionError) return true
   if (err instanceof MCPResponseError) {

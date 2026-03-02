@@ -1,64 +1,59 @@
 /**
  * Raw MCP response types — before normalization.
- * Field names match the Korean API field names from the real-estate-mcp server.
+ * Field names match the actual MCP server tool output (English snake_case).
  */
 
-/** 매매 거래 원시 응답 */
+/** 매매 거래 원시 응답 아이템 */
 export interface MCPTradeRaw {
-  /** 거래금액 (만원, 콤마 포함 가능 "85,000") */
-  거래금액: string
-  /** 년도 "2026" */
-  년: string
-  /** 월 "01" */
-  월: string
-  /** 일 "15" */
-  일: string
+  /** 단지명 (아파트: apt_name, 오피스텔/빌라: unit_name) */
+  apt_name?: string
+  unit_name?: string
   /** 법정동 이름 "역삼동" */
-  법정동: string
-  /** 단지명 "래미안" */
-  아파트: string
-  /** 전용면적 (㎡) "84.98" */
-  전용면적: string
-  /** 층 "12" */
-  층: string
-  /** 지번 (optional) */
-  지번?: string
-  /** 건축년도 (optional) */
-  건축년도?: string
-}
-
-/** 전월세 거래 원시 응답 */
-export interface MCPRentRaw {
-  /** 보증금 (만원, 콤마 포함 가능 "50,000") */
-  보증금액: string
-  /** 월세금액 (만원, 전세면 "0") */
-  월세금액: string
-  /** 년도 "2026" */
-  년: string
-  /** 월 "01" */
-  월: string
-  /** 일 "15" */
-  일: string
-  /** 법정동 이름 */
-  법정동: string
-  /** 단지명 */
-  아파트: string
+  dong: string
   /** 전용면적 (㎡) */
-  전용면적: string
+  area_sqm: number
   /** 층 */
-  층: string
-  /** 지번 (optional) */
-  지번?: string
-  /** 건축년도 (optional) */
-  건축년도?: string
+  floor: number
+  /** 거래금액 (만원) */
+  price_10k: number
+  /** 거래일 "2026-01-15" */
+  trade_date: string
+  /** 건축년도 */
+  build_year: number
+  /** 거래유형 */
+  deal_type?: string
+  /** 주택유형 (빌라/단독) */
+  house_type?: string
 }
 
-/** 법정동 코드 원시 응답 */
+/** 전월세 거래 원시 응답 아이템 */
+export interface MCPRentRaw {
+  /** 단지명 */
+  unit_name: string
+  /** 법정동 이름 */
+  dong: string
+  /** 전용면적 (㎡) */
+  area_sqm: number
+  /** 층 */
+  floor: number
+  /** 보증금 (만원) */
+  deposit_10k: number
+  /** 월세 (만원, 전세면 0) */
+  monthly_rent_10k: number
+  /** 계약유형 */
+  contract_type?: string
+  /** 거래일 "2026-01-15" */
+  trade_date: string
+  /** 건축년도 */
+  build_year: number
+  /** 주택유형 (빌라/단독) */
+  house_type?: string
+}
+
+/** 법정동 코드 원시 응답 (matches 배열 아이템) */
 export interface MCPRegionCodeRaw {
-  /** 법정동 코드 (5자리 또는 10자리) */
-  법정동코드: string
+  /** 법정동 코드 (10자리) */
+  code: string
   /** 법정동명 "서울특별시 강남구" */
-  법정동명: string
-  /** 폐지여부 (optional) "존재" | "폐지" */
-  폐지여부?: string
+  name: string
 }

@@ -232,17 +232,17 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
-/** Format number with Korean comma style */
-function fmt(n: number): string {
-  return n.toLocaleString('ko-KR')
-}
-
 function findDistrict(lawd: string) {
   return SEOUL_DISTRICTS.find((d) => d.code === lawd) ?? SEOUL_DISTRICTS[0]
 }
 
 // Common area sizes (㎡) for apartments
 const AREA_SIZES = [33.06, 49.58, 59.99, 74.99, 84.98, 101.29, 114.99, 134.98]
+
+function makeMockDate(year: string, month: string): string {
+  const day = String(rand(1, 28)).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 // ---------------------------------------------------------------------------
 // Mock generators
@@ -268,16 +268,13 @@ export function mockTradeData(lawd: string, yearMonth: string): MCPTradeRaw[] {
     )
 
     return {
-      거래금액: fmt(price),
-      년: year,
-      월: month,
-      일: String(rand(1, 28)).padStart(2, '0'),
-      법정동: pick(district.dongs),
-      아파트: pick(district.aptNames),
-      전용면적: String(randFloat(area - 5, area + 5)),
-      층: String(rand(1, 30)),
-      지번: `${rand(1, 999)}-${rand(1, 20)}`,
-      건축년도: String(rand(1990, 2023)),
+      apt_name: pick(district.aptNames),
+      dong: pick(district.dongs),
+      area_sqm: randFloat(area - 5, area + 5),
+      floor: rand(1, 30),
+      price_10k: price,
+      trade_date: makeMockDate(year, month),
+      build_year: rand(1990, 2023),
     }
   })
 }
@@ -305,17 +302,14 @@ export function mockRentData(lawd: string, yearMonth: string): MCPRentRaw[] {
     const monthlyRent = isJeonse ? 0 : rand(50, 300)
 
     return {
-      보증금액: fmt(deposit),
-      월세금액: fmt(monthlyRent),
-      년: year,
-      월: month,
-      일: String(rand(1, 28)).padStart(2, '0'),
-      법정동: pick(district.dongs),
-      아파트: pick(district.aptNames),
-      전용면적: String(randFloat(area - 5, area + 5)),
-      층: String(rand(1, 30)),
-      지번: `${rand(1, 999)}-${rand(1, 20)}`,
-      건축년도: String(rand(1990, 2023)),
+      unit_name: pick(district.aptNames),
+      dong: pick(district.dongs),
+      area_sqm: randFloat(area - 5, area + 5),
+      floor: rand(1, 30),
+      deposit_10k: deposit,
+      monthly_rent_10k: monthlyRent,
+      trade_date: makeMockDate(year, month),
+      build_year: rand(1990, 2023),
     }
   })
 }
@@ -337,8 +331,7 @@ export function mockRegionCodes(query: string): MCPRegionCodeRaw[] {
   const source = matches.length > 0 ? matches : SEOUL_DISTRICTS.slice(0, 5)
 
   return source.map((d): MCPRegionCodeRaw => ({
-    법정동코드: d.code,
-    법정동명: `서울특별시 ${d.name}`,
-    폐지여부: '존재',
+    code: d.code + '00000',
+    name: `서울특별시 ${d.name}`,
   }))
 }

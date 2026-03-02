@@ -2,11 +2,14 @@
  * MCP Client — server-side only.
  *
  * Set MCP_MODE=mock (default) to use generated mock data.
- * Set MCP_MODE=live and MCP_SERVER_URL to proxy requests to the real MCP server.
+ * Set MCP_MODE=live to spawn the MCP server via stdio and call tools directly.
  */
 
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
+
 import type { MCPTradeRaw, MCPRentRaw, MCPRegionCodeRaw } from './types'
-import { MCPConnectionError, MCPResponseError, MCPTimeoutError, isRetryable } from './errors'
+import { MCPConnectionError, MCPResponseError, MCPToolError, isRetryable } from './errors'
 import { mockTradeData, mockRentData, mockRegionCodes } from './mock'
 import type { PropertyType } from '@/types/filter'
 
@@ -15,12 +18,46 @@ import type { PropertyType } from '@/types/filter'
 // ---------------------------------------------------------------------------
 
 const MCP_MODE = process.env.MCP_MODE ?? 'mock'
-const MCP_SERVER_URL = process.env.MCP_SERVER_URL ?? 'http://localhost:3001'
-const DEFAULT_TIMEOUT_MS = 10_000
 const MAX_RETRIES = 3
 
 // ---------------------------------------------------------------------------
-// Retry / timeout helpers
+// Singleton MCP Client (globalThis to survive Next.js hot-reload)
+// ---------------------------------------------------------------------------
+
+const globalForMCP = globalThis as typeof globalThis & { __mcpClient?: Client }
+
+async function getMCPClient(): Promise<Client> {
+  if (globalForMCP.__mcpClient) return globalForMCP.__mcpClient
+
+  const command = process.env.MCP_SERVER_COMMAND ?? 'uv'
+  const args = (process.env.MCP_SERVER_ARGS ?? '').split(',').filter(Boolean)
+
+  const transport = new StdioClientTransport({
+    command,
+    args,
+    env: {
+      ...process.env,
+      DATA_GO_KR_API_KEY: process.env.DATA_GO_KR_API_KEY ?? '',
+    } as Record<string, string>,
+  })
+
+  const client = new Client({ name: 'real-estate-web', version: '0.1.0' })
+
+  try {
+    await client.connect(transport)
+  } catch (err) {
+    throw new MCPConnectionError(
+      `${command} ${args.join(' ')}`,
+      err instanceof Error ? err : new Error(String(err)),
+    )
+  }
+
+  globalForMCP.__mcpClient = client
+  return client
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
 // ---------------------------------------------------------------------------
 
 function sleep(ms: number): Promise<void> {
@@ -28,76 +65,84 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Fetch with an AbortController timeout.
+ * Call an MCP tool with retry logic.
+ * - `isError: true` responses throw MCPToolError (not retryable).
+ * - Connection/transport errors are retried with exponential backoff.
  */
-async function fetchWithTimeout(
-  url: string,
-  init: RequestInit,
-  timeoutMs = DEFAULT_TIMEOUT_MS,
-): Promise<Response> {
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), timeoutMs)
-  try {
-    return await fetch(url, { ...init, signal: controller.signal })
-  } catch (err) {
-    if ((err as Error).name === 'AbortError') {
-      throw new MCPTimeoutError(timeoutMs)
-    }
-    throw err
-  } finally {
-    clearTimeout(timer)
-  }
-}
-
-/**
- * Perform a fetch with exponential backoff retry.
- */
-async function fetchWithRetry<T>(
-  url: string,
-  init: RequestInit,
-  timeoutMs = DEFAULT_TIMEOUT_MS,
-): Promise<T> {
+async function callTool<T>(toolName: string, args: Record<string, unknown>): Promise<T> {
   let lastError: unknown
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const res = await fetchWithTimeout(url, init, timeoutMs)
+      const client = await getMCPClient()
+      const result = await client.callTool({ name: toolName, arguments: args })
 
-      if (!res.ok) {
-        const body = await res.text().catch(() => '')
-        throw new MCPResponseError(res.status, body)
+      if (result.isError) {
+        const msg =
+          Array.isArray(result.content) &&
+          result.content.length > 0 &&
+          result.content[0].type === 'text'
+            ? (result.content[0] as { type: 'text'; text: string }).text
+            : 'Unknown error'
+        throw new MCPToolError(toolName, msg)
       }
 
-      return (await res.json()) as T
+      const text =
+        Array.isArray(result.content) &&
+        result.content.length > 0 &&
+        result.content[0].type === 'text'
+          ? (result.content[0] as { type: 'text'; text: string }).text
+          : null
+
+      if (!text) throw new MCPResponseError(500, 'Empty tool response')
+
+      return JSON.parse(text) as T
     } catch (err) {
       lastError = err
-
       if (!isRetryable(err) || attempt === MAX_RETRIES) break
-
-      const backoffMs = Math.min(1000 * 2 ** attempt + Math.random() * 500, 8000)
-      await sleep(backoffMs)
+      await sleep(Math.min(1000 * 2 ** attempt + Math.random() * 500, 8000))
     }
   }
 
-  // Re-wrap connection-level errors
-  if (lastError instanceof MCPTimeoutError || lastError instanceof MCPResponseError) {
-    throw lastError
-  }
-  throw new MCPConnectionError(MCP_SERVER_URL, lastError as Error)
+  throw lastError
 }
 
 // ---------------------------------------------------------------------------
-// Live MCP API helpers
+// PropertyType → MCP tool name mapping
 // ---------------------------------------------------------------------------
 
-/** Map PropertyType to the MCP server's type string */
-function propertyTypeToMCPParam(type: PropertyType): string {
-  const map: Record<PropertyType, string> = {
-    apartment: 'apt',
-    officetel: 'officetel',
-    rowhouse: 'rh',
-  }
-  return map[type]
+const TRADE_TOOLS: Record<PropertyType, string> = {
+  apartment: 'get_apartment_trades',
+  officetel: 'get_officetel_trades',
+  rowhouse: 'get_villa_trades',
+}
+
+const RENT_TOOLS: Record<PropertyType, string> = {
+  apartment: 'get_apartment_rent',
+  officetel: 'get_officetel_rent',
+  rowhouse: 'get_villa_rent',
+}
+
+// ---------------------------------------------------------------------------
+// MCP response wrapper types
+// ---------------------------------------------------------------------------
+
+interface MCPTradeResponse {
+  total_count: number
+  items: MCPTradeRaw[]
+  summary: Record<string, unknown>
+}
+
+interface MCPRentResponse {
+  total_count: number
+  items: MCPRentRaw[]
+  summary: Record<string, unknown>
+}
+
+interface MCPRegionCodeResponse {
+  region_code: string
+  full_name: string
+  matches: MCPRegionCodeRaw[]
 }
 
 // ---------------------------------------------------------------------------
@@ -105,7 +150,7 @@ function propertyTypeToMCPParam(type: PropertyType): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch apartment trade records from MCP.
+ * Fetch trade records from MCP.
  * @param type Property type
  * @param lawd 5-digit region code
  * @param ym YYYYMM
@@ -116,17 +161,15 @@ export async function fetchTrades(
   ym: string,
 ): Promise<MCPTradeRaw[]> {
   if (MCP_MODE === 'mock') {
-    // Simulate a small async delay in mock mode
     await sleep(20)
     return mockTradeData(lawd, ym)
   }
 
-  const url = new URL(`${MCP_SERVER_URL}/api/trades`)
-  url.searchParams.set('type', propertyTypeToMCPParam(type))
-  url.searchParams.set('LAWD_CD', lawd)
-  url.searchParams.set('DEAL_YMD', ym)
-
-  return fetchWithRetry<MCPTradeRaw[]>(url.toString(), { method: 'GET' })
+  const response = await callTool<MCPTradeResponse>(TRADE_TOOLS[type], {
+    region_code: lawd,
+    year_month: ym,
+  })
+  return response.items
 }
 
 /**
@@ -145,12 +188,11 @@ export async function fetchRents(
     return mockRentData(lawd, ym)
   }
 
-  const url = new URL(`${MCP_SERVER_URL}/api/rents`)
-  url.searchParams.set('type', propertyTypeToMCPParam(type))
-  url.searchParams.set('LAWD_CD', lawd)
-  url.searchParams.set('DEAL_YMD', ym)
-
-  return fetchWithRetry<MCPRentRaw[]>(url.toString(), { method: 'GET' })
+  const response = await callTool<MCPRentResponse>(RENT_TOOLS[type], {
+    region_code: lawd,
+    year_month: ym,
+  })
+  return response.items
 }
 
 /**
@@ -163,8 +205,6 @@ export async function fetchRegionCode(query: string): Promise<MCPRegionCodeRaw[]
     return mockRegionCodes(query)
   }
 
-  const url = new URL(`${MCP_SERVER_URL}/api/region-code`)
-  url.searchParams.set('q', query)
-
-  return fetchWithRetry<MCPRegionCodeRaw[]>(url.toString(), { method: 'GET' })
+  const response = await callTool<MCPRegionCodeResponse>('get_region_code', { query })
+  return response.matches
 }
