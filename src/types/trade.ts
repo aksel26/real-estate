@@ -25,6 +25,8 @@ export interface TradeItem {
   floor: number
   /** 거래일 "2026-01-15" */
   dealDate: string
+  /** 법정동 이름 "역삼동" */
+  dong: string
   /** 지번 */
   jibun: string
   /** 건축년도 */

@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { KakaoMap } from './KakaoMap'
 import { PolygonLayer } from './PolygonLayer'
+import { MarkerLayer } from './MarkerLayer'
 import { useMapStoreSync } from './useMapStoreSync'
 import { useFilterStore, useSelectionStore } from '@/stores'
 import { usePrefetchAdjacentMonths } from '@/hooks/queries'
@@ -37,6 +38,7 @@ export function MapContent() {
         onMapReady={setMapInstance}
       />
       <PolygonLayer map={mapInstance} />
+      <MarkerLayer map={mapInstance} />
     </div>
   )
 }

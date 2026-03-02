@@ -57,14 +57,33 @@ declare namespace kakao.maps {
     zIndex?: number
   }
 
+  class CustomOverlay {
+    constructor(options: CustomOverlayOptions)
+    setMap(map: Map | null): void
+    setPosition(position: LatLng): void
+    setContent(content: string | HTMLElement): void
+    getPosition(): LatLng
+    setZIndex(zIndex: number): void
+  }
+
+  interface CustomOverlayOptions {
+    position: LatLng
+    content: string | HTMLElement
+    map?: Map
+    clickable?: boolean
+    xAnchor?: number
+    yAnchor?: number
+    zIndex?: number
+  }
+
   namespace event {
     function addListener(
-      target: Map | Polygon,
+      target: Map | Polygon | CustomOverlay,
       type: string,
       handler: (...args: unknown[]) => void
     ): void
     function removeListener(
-      target: Map | Polygon,
+      target: Map | Polygon | CustomOverlay,
       type: string,
       handler?: (...args: unknown[]) => void
     ): void

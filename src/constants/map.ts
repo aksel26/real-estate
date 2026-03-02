@@ -16,6 +16,12 @@ export const SIGUNGU_MIN_ZOOM = 9;
 /** 행정동 단위 표시 최소 줌 */
 export const DONG_MIN_ZOOM = 12;
 
+/** 마커 최대 표시 개수 */
+export const MAX_MARKERS = 20;
+
+/** 지오코딩 동시 요청 수 제한 */
+export const GEOCODE_CONCURRENCY = 5;
+
 /** 폴리곤 스타일 (default / hover / selected) */
 export const POLYGON_STYLES: Record<'default' | 'hover' | 'selected', PolygonStyle> = {
   default: {

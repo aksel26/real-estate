@@ -23,6 +23,7 @@ export function useMapInteraction({
 }: UseMapInteractionOptions): void {
   const selectRegion = useSelectionStore((s) => s.selectRegion)
   const openPanel = useUIStore((s) => s.openPanel)
+  const clearAptSelection = useUIStore((s) => s.clearAptSelection)
   const setHoverRegion = useMapStore((s) => s.setHoverRegion)
   const selectedPolygonId = useSelectionStore((s) => s.selectedPolygonId)
 
@@ -49,9 +50,10 @@ export function useMapInteraction({
       setPolygonStyle(code, 'selected')
       selectedCodeRef.current = code
       selectRegion(code, name, code)
+      clearAptSelection()
       openPanel()
     },
-    [selectRegion, openPanel, setPolygonStyle]
+    [selectRegion, openPanel, clearAptSelection, setPolygonStyle]
   )
 
   useEffect(() => {
