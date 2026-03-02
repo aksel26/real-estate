@@ -1,5 +1,9 @@
 import type { JeonseRateGrade } from '@/types/filter'
+import type { PriceDistributionItem, JeonseRatioBandItem } from '@/types/ranking'
+import type { TradeItem } from '@/types/trade'
+import type { RentItem } from '@/types/rent'
 import { JEONSE_RATE_THRESHOLDS } from '@/constants/filter'
+import { AREA_BANDS } from '@/constants/ranking'
 
 /**
  * 숫자 배열의 중위값(median)을 계산
@@ -85,4 +89,79 @@ export function calculateMean(numbers: number[]): number {
 export function calculateChangeRate(from: number, to: number): number {
   if (from === 0) return 0
   return ((to - from) / from) * 100
+}
+
+function filterItemsByBand<T extends { area: number }>(
+  items: T[],
+  min: number | null,
+  max: number | null,
+): T[] {
+  return items.filter((item) => {
+    if (min !== null && item.area < min) return false
+    if (max !== null && item.area >= max) return false
+    return true
+  })
+}
+
+/**
+ * 면적대별 매매/전세 가격 분포 계산
+ */
+export function computePriceDistribution(
+  tradeItems: TradeItem[],
+  rentItems: RentItem[],
+): PriceDistributionItem[] {
+  const jeonseItems = rentItems.filter((i) => i.rentType === 'jeonse')
+
+  return AREA_BANDS.filter((b) => b.id !== 'all').map((band) => {
+    const trades = filterItemsByBand(tradeItems, band.min, band.max)
+    const rents = filterItemsByBand(jeonseItems, band.min, band.max)
+
+    const tradePrices = trades.map((t) => t.price)
+    const rentDeposits = rents.map((r) => r.deposit)
+
+    return {
+      bandId: band.id,
+      bandLabel: band.label,
+      tradeMedian: calculateMedian(tradePrices),
+      tradeQ1: calculateQuantile(tradePrices, 0.25),
+      tradeQ3: calculateQuantile(tradePrices, 0.75),
+      tradeCount: trades.length,
+      rentMedian: calculateMedian(rentDeposits),
+      rentQ1: calculateQuantile(rentDeposits, 0.25),
+      rentQ3: calculateQuantile(rentDeposits, 0.75),
+      rentCount: rents.length,
+    }
+  })
+}
+
+/**
+ * 면적대별 전세가율 계산
+ */
+export function computeJeonseRatioByBand(
+  tradeItems: TradeItem[],
+  rentItems: RentItem[],
+): JeonseRatioBandItem[] {
+  const jeonseItems = rentItems.filter((i) => i.rentType === 'jeonse')
+
+  return AREA_BANDS.filter((b) => b.id !== 'all').map((band) => {
+    const trades = filterItemsByBand(tradeItems, band.min, band.max)
+    const rents = filterItemsByBand(jeonseItems, band.min, band.max)
+
+    const tradeMedian = calculateMedian(trades.map((t) => t.price))
+    const jeonseMedian = calculateMedian(rents.map((r) => r.deposit))
+
+    const { rate, grade } = calculateJeonseRate(jeonseMedian, tradeMedian)
+
+    return {
+      bandId: band.id,
+      bandLabel: band.label,
+      tradeMedian,
+      jeonseMedian,
+      ratio: rate,
+      grade,
+      tradeCount: trades.length,
+      jeonseCount: rents.length,
+      isLowSample: trades.length < 5 || rents.length < 5,
+    }
+  })
 }
