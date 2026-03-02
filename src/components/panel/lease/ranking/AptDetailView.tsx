@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { useUIStore } from '@/stores';
+import { useAptDetail } from '@/hooks';
 import { formatPrice, formatArea } from '@/lib/utils';
+import { AptDetailShell, AreaBreakdownChart, AptPriceTrendChart } from '../../shared';
 import type { AptRankItem, RentItem } from '@/types';
 
 type SubTab = 'jeonse' | 'monthly';
@@ -33,8 +34,8 @@ function DealRow({ deal }: { deal: RentItem }) {
 }
 
 export default function AptDetailView({ item }: Props) {
-  const clearAptSelection = useUIStore((s) => s.clearAptSelection);
   const [subTab, setSubTab] = useState<SubTab>('jeonse');
+  const { areaBreakdown, monthlyTrend } = useAptDetail(item.aptName, 'rent');
 
   const filteredDeals = item.recentItems
     .filter((d) => d.rentType === subTab)
@@ -42,49 +43,25 @@ export default function AptDetailView({ item }: Props) {
     .slice(0, 10);
 
   return (
-    <motion.div
-      initial={{ x: '100%', opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: '100%', opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="absolute inset-0 bg-slate-50 z-20 flex flex-col"
+    <AptDetailShell
+      aptName={item.aptName}
+      medianArea={item.medianArea}
+      countTotal={item.countTotal}
     >
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
-        <button
-          onClick={clearAptSelection}
-          className="p-1 -ml-1 rounded-lg hover:bg-slate-100 transition-colors"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-slate-600"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-        <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-bold text-slate-900 truncate md:text-base">
-            {item.aptName}
-          </h3>
-          <p className="text-[11px] text-slate-400 font-medium">
-            {formatArea(item.medianArea)} · 총 {item.countTotal}건
-          </p>
-        </div>
+      {/* Charts */}
+      <div className="p-4 space-y-4">
+        <AreaBreakdownChart data={areaBreakdown} label="면적별 전세 중위가" color="#8b5cf6" />
+        <AptPriceTrendChart data={monthlyTrend} label="월별 전세가 추이" color="#8b5cf6" />
       </div>
 
       {/* Sub tabs */}
       <div className="bg-white border-b border-slate-100 flex">
-        {([
-          { id: 'jeonse' as SubTab, label: '전세', count: item.countJeonse },
-          { id: 'monthly' as SubTab, label: '월세', count: item.countMonthly },
-        ]).map((tab) => (
+        {(
+          [
+            { id: 'jeonse' as SubTab, label: '전세', count: item.countJeonse },
+            { id: 'monthly' as SubTab, label: '월세', count: item.countMonthly },
+          ] as const
+        ).map((tab) => (
           <button
             key={tab.id}
             onClick={() => setSubTab(tab.id)}
@@ -106,7 +83,7 @@ export default function AptDetailView({ item }: Props) {
       </div>
 
       {/* Deal list */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="p-4">
         {filteredDeals.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-sm text-slate-400 font-medium">
@@ -124,6 +101,6 @@ export default function AptDetailView({ item }: Props) {
           * 최근 거래 최대 10건 (참고용)
         </p>
       </div>
-    </motion.div>
+    </AptDetailShell>
   );
 }
